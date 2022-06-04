@@ -5,18 +5,19 @@ class Env {
 
         env.games = {}
         env.IDIndex = 0
-        env.width = 900
+        env.width = 1000
         env.height = 600
         env.lastReset = 0
 
-        env.gapHeight = 120
+        env.gapHeight = 130
         env.floorHeight = 35
+        env.birdSpawnLeft = env.width * 0.3
 
         env.tick = 0
         env.roundTick = 0
         env.generation = 1
-        env.topFitness = 0
-        env.currentFitness = 0
+        env.topScore = 0
+        env.currentScore = 0
         env.gamesAmount = 1
         env.speed = 100
 
@@ -25,15 +26,15 @@ class Env {
             'roundTick',
             'generation',
             'gamesAmount',
-            'topFitness',
-            'currentFitness',
+            'topScore',
+            'currentScore',
             'speed'
         ]
 
         env.inputs = [
-            { name: 'Y unit pos' },
-            { name: 'Y gap pos' },
-            { name: 'Velocity' },
+            { name: 'Gap y pos' },
+            { name: 'Gap x pos' },
+            { name: 'Bird velocity' },
         ]
 
         env.outputs = [
@@ -118,33 +119,49 @@ Env.prototype.run = function() {
 
         const game = env.games[gameID]
 
-        if (this.roundTick % 300 == 0) {
+        if (this.roundTick % 250 == 0) {
 
             const pipeTop = new PipeTop(game.ID, Object.keys(game.players)[0])
 
             new PipeBottom(game.ID, Object.keys(game.players)[0], pipeTop)
         }
 
+        const pipeTopsPastBird = []
+
         for (const ID in game.objects.pipeTop) {
 
             const pipe = game.objects.pipeTop[ID]
 
+            if (pipe.pos.left + pipe.width <= env.birdSpawnLeft) pipe.pastBird = true
+
+            else pipeTopsPastBird.push(pipe)
+
             pipe.move(pipe.pos.left - 2, pipe.pos.top)
+
+            if (pipe.pos.left + pipe.width <= 0) pipe.delete()
         }
+
+        const pipeBottomsPastBird = []
 
         for (const ID in game.objects.pipeBottom) {
 
             const pipe = game.objects.pipeBottom[ID]
 
+            if (pipe.pos.left + pipe.width <= env.birdSpawnLeft) pipe.pastBird = true
+
+            else pipeBottomsPastBird.push(pipe)
+
             pipe.move(pipe.pos.left - 2, pipe.pos.top)
+
+            if (pipe.pos.left + pipe.width <= 0) pipe.delete()
         }
 
-        const closestTopPipe = Object.values(game.objects.pipeTop).sort(function(a, b) {
+        const closestTopPipe = pipeTopsPastBird.sort(function(a, b) {
 
             return a.left - b.left
         })[0]
 
-        const closestBottomPipe = Object.values(game.objects.pipeBottom).sort(function(a, b) {
+        const closestBottomPipe = pipeBottomsPastBird.sort(function(a, b) {
 
             return a.left - b.left
         })[0]
@@ -166,9 +183,9 @@ Env.prototype.run = function() {
             bird.applyGravity()
 
             bird.inputs = [
-                { name: 'Y unit pos', value: bird.pos.top - bird.height / 2 },
-                { name: 'Y gap pos', value: gapCenterY },
-                { name: 'Velocity', value: bird.velocity },
+                { name: 'Bird Y pos', value: bird.pos.top - bird.height / 2 },
+                { name: 'Gap Y pos', value: gapCenterY },
+                { name: 'Bird velocity', value: bird.velocity },
             ]
 
             bird.outputs = [
@@ -239,8 +256,8 @@ Env.prototype.run = function() {
     fittestUnit.network.updateVisuals(fittestUnit.inputs)
     fittestUnit.network.visualsParent.classList.remove('networkParentHide')
 
-    if (fittestUnit.fitness > env.topFitness) env.topFitness = fittestUnit.fitness
-    env.currentFitness = fittestUnit.fitness
+    if (fittestUnit.score > env.topScore) env.topScore = fittestUnit.score
+    env.currentScore = fittestUnit.score
 
     //
 

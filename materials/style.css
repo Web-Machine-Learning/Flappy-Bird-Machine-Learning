@@ -112,7 +112,19 @@ div {
     justify-content: center;
     align-items: center;
     font-size: 35px;
-    font-weight: 800;
+    font-weight: 900;
+    text-align: center;
+    letter-spacing: 1px;
+    user-select: none;
+}
+
+.envHeader {
+    gap: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    font-weight: 700;
     text-align: center;
     letter-spacing: 1px;
     user-select: none;
