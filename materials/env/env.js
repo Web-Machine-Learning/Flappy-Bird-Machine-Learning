@@ -212,6 +212,13 @@ Env.prototype.run = function() {
                 continue
             }
 
+            if (bird.pos.isInside(closestTopPipe.pos) ||
+                bird.pos.isInside(closestBottomPipe.pos)) {
+
+                bird.kill()
+                continue
+            }
+
             if (bird.velocity < 0) bird.imageID = 'birdUp'
 
             else bird.imageID = 'birdDown'
