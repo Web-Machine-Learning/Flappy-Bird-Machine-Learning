@@ -8,6 +8,7 @@ class GameObject {
         gameObj.ownerID = ownerID
 
         gameObj.pos = new Pos(left, top, width, height)
+        gameObj.imageID = gameObj.type
 
         gameObj.width = width
         gameObj.height = height
@@ -25,7 +26,7 @@ GameObject.prototype.draw = function() {
 
     const gameObj = this
 
-    env.cm.drawImage(document.getElementById(gameObj.type), gameObj.pos.left, gameObj.pos.top, gameObj.width, gameObj.height)
+    env.cm.drawImage(document.getElementById(gameObj.imageID), gameObj.pos.left, gameObj.pos.top, gameObj.width, gameObj.height)
 }
 
 GameObject.prototype.delete = function() {
@@ -47,9 +48,9 @@ GameObject.prototype.move = function(left, top) {
     const gameObj = this
 
     // Check if the new pos is out of map bounds, stopping if it is
-
-    if (left < 0 || left + gameObj.width >= env.width || top < 0 || top + gameObj.height >= env.height) return
-
+    /* 
+        if (left < 0 || left + gameObj.width >= env.width || top < 0 || top + gameObj.height >= env.height) return
+     */
     // Otherwise assign the new left and top to the gameObj's pos
 
     gameObj.pos.left = left

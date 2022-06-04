@@ -20,11 +20,19 @@ Game.prototype.init = function(inputs, outputs, weightLayers, activationLayers) 
 
     /* new Player('person', game.ID) */
 
+    new GameObject('background', game.ID, Object.keys(game.players)[0], 0, 0, env.width, env.height)
+
+    new GameObject('floor', game.ID, Object.keys(game.players)[0], 0, env.height - env.floorHeight, env.width, env.floorHeight)
+
+    new PipeTop(game.ID, Object.keys(game.players)[0])
+
+    new PipeBottom(game.ID, Object.keys(game.players)[0])
+
     // Create x number of units
 
     for (let i = 0; i < 100; i++) {
 
-        new ExampleUnit('example', game.ID, Object.keys(game.players)[0], 10, 10, 30, 30, inputs, outputs, weightLayers, activationLayers)
+        new Bird(game.ID, Object.keys(game.players)[0], inputs, outputs, weightLayers, activationLayers)
     }
 }
 

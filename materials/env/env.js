@@ -6,8 +6,11 @@ class Env {
         env.games = {}
         env.IDIndex = 0
         env.width = 900
-        env.height = 700
+        env.height = 600
         env.lastReset = 0
+
+        env.gapHeight = 60
+        env.floorHeight = 35
 
         env.tick = 0
         env.roundTick = 0
@@ -28,15 +31,13 @@ class Env {
         ]
 
         env.inputs = [
-            { name: 'X unit pos', value: 0 },
-            { name: 'Y unit pos', value: 0 },
+            { name: 'X unit pos' },
+            { name: 'Y gap pos' },
+            { name: 'Velocity' },
         ]
 
         env.outputs = [
-            { name: 'Move left' },
-            { name: 'Move right' },
-            { name: 'Move up' },
-            { name: 'Move down' },
+            { name: 'Flap' },
         ]
     }
 }
@@ -106,10 +107,6 @@ Env.prototype.run = function() {
 
     env.cm.restore()
 
-    //
-
-    /* Object.values(env.games)[0].visualize() */
-
     // Record units
 
     const units = []
@@ -120,38 +117,61 @@ Env.prototype.run = function() {
 
         const game = env.games[gameID]
 
-        for (const ID in game.objects.example) {
+        for (const ID in game.objects.pipeTop) {
 
-            const gameObj = game.objects.example[ID]
+            const pipe = game.objects.pipeTop[ID]
 
-            gameObj.inputs = [
-                { name: 'X unit pos', value: gameObj.pos.left - gameObj.width / 2 },
-                { name: 'Y unit pos', value: gameObj.pos.top - gameObj.height / 2 },
+            pipe.move(pipe.pos.left - 1, pipe.pos.top)
+        }
+
+        for (const ID in game.objects.pipeBottom) {
+
+            const pipe = game.objects.pipeBottom[ID]
+
+            pipe.move(pipe.pos.left - 1, pipe.pos.top)
+        }
+
+        const gap = {
+            top: 1,
+            left: 1,
+        }
+
+        for (const ID in game.objects.bird) {
+
+            const bird = game.objects.bird[ID]
+
+            if (bird.network.visualsParent) bird.network.visualsParent.classList.add('networkParentHide')
+
+            if (bird.dead) continue
+
+            bird.lastJump -= 1
+
+            bird.applyGravity()
+
+            bird.inputs = [
+                { name: 'X unit pos', value: bird.pos.left - bird.width / 2 },
+                { name: 'Y gap pos', value: gap.top },
+                { name: 'Velocity', value: bird.velocity },
             ]
 
-            gameObj.outputs = [
-                { name: 'Move left', operation: () => gameObj.move(gameObj.pos.left - 1, gameObj.pos.top) },
-                { name: 'Move right', operation: () => gameObj.move(gameObj.pos.left + 1, gameObj.pos.top) },
-                { name: 'Move up', operation: () => gameObj.move(gameObj.pos.left, gameObj.pos.top - 1) },
-                { name: 'Move down', operation: () => gameObj.move(gameObj.pos.left, gameObj.pos.top + 1) },
+            bird.outputs = [
+                { name: 'Flap', operation: () => bird.move(bird.pos.left - 1, bird.pos.top) },
             ]
 
-            gameObj.network.forwardPropagate(gameObj.inputs)
+            bird.network.forwardPropagate(bird.inputs)
 
-            /* if (!gameObj.network.visualsParent) gameObj.network.createVisuals(gameObj.inputs, gameObj.outputs)
-            gameObj.network.updateVisuals(gameObj.inputs) */
-
-            if (gameObj.network.visualsParent) gameObj.network.visualsParent.classList.add('networkParentHide')
+            /* if (!bird.network.visualsParent) bird.network.createVisuals(bird.inputs, bird.outputs)
+            bird.network.updateVisuals(bird.inputs) */
 
             // Find last layer
 
-            const lastLayerActivations = gameObj.network.activationLayers[gameObj.network.activationLayers.length - 1],
+            const lastLayerActivations = bird.network.activationLayers[bird.network.activationLayers.length - 1],
                 /* 
                             for (const perceptron of lastLayerPerceptrons) {
 
                                 if (perceptron.activation <= 0) continue
 
-                                gameObj.outputs[perceptron.name].operation()
+                                bird.outputs[perceptron.name].operation()
                             }
                  */
                 // Sort perceptrons by activation and get the largest one
@@ -161,12 +181,14 @@ Env.prototype.run = function() {
 
             if (largestActivation > 0) {
 
-                gameObj.outputs[largestActivationIndex].operation()
+                bird.outputs[largestActivationIndex].operation()
             }
 
-            gameObj.generateFitness()
+            bird.fitness += 1
 
-            units.push(gameObj)
+            bird.move(bird.pos.left, Math.min(Math.max(bird.pos.top + bird.velocity, bird.height + this.floorHeight), 0))
+
+            units.push(bird)
         }
 
         game.visualize()
