@@ -18,7 +18,7 @@ class Env {
         env.topFitness = 0
         env.currentFitness = 0
         env.gamesAmount = 1
-        env.speed = 1
+        env.speed = 100
 
         env.stats = [
             'tick',
@@ -31,7 +31,7 @@ class Env {
         ]
 
         env.inputs = [
-            { name: 'X unit pos' },
+            { name: 'Y unit pos' },
             { name: 'Y gap pos' },
             { name: 'Velocity' },
         ]
@@ -109,7 +109,8 @@ Env.prototype.run = function() {
 
     // Record units
 
-    const units = []
+    const allBirds = []
+    const aliveBirds = []
 
     //
 
@@ -121,24 +122,33 @@ Env.prototype.run = function() {
 
             const pipe = game.objects.pipeTop[ID]
 
-            pipe.move(pipe.pos.left - 1, pipe.pos.top)
+            pipe.move(pipe.pos.left - 2, pipe.pos.top)
         }
 
         for (const ID in game.objects.pipeBottom) {
 
             const pipe = game.objects.pipeBottom[ID]
 
-            pipe.move(pipe.pos.left - 1, pipe.pos.top)
+            pipe.move(pipe.pos.left - 2, pipe.pos.top)
         }
 
-        const gap = {
-            top: 1,
-            left: 1,
-        }
+        const closestTopPipe = Object.values(game.objects.pipeTop).sort(function(a, b) {
+
+            return a.left - b.left
+        })[0]
+
+        const closestBottomPipe = Object.values(game.objects.pipeBottom).sort(function(a, b) {
+
+            return a.left - b.left
+        })[0]
+
+        const gapCenterY = (closestTopPipe.pos.top + closestTopPipe.height) + this.gapHeight / 2
 
         for (const ID in game.objects.bird) {
 
             const bird = game.objects.bird[ID]
+
+            allBirds.push(bird)
 
             if (bird.network.visualsParent) bird.network.visualsParent.classList.add('networkParentHide')
 
@@ -149,8 +159,8 @@ Env.prototype.run = function() {
             bird.applyGravity()
 
             bird.inputs = [
-                { name: 'X unit pos', value: bird.pos.left - bird.width / 2 },
-                { name: 'Y gap pos', value: gap.top },
+                { name: 'Y unit pos', value: bird.pos.top - bird.height / 2 },
+                { name: 'Y gap pos', value: gapCenterY },
                 { name: 'Velocity', value: bird.velocity },
             ]
 
@@ -165,26 +175,35 @@ Env.prototype.run = function() {
 
             // Find last layer
 
-            const lastLayerActivations = bird.network.activationLayers[bird.network.activationLayers.length - 1],
-                /* 
-                            for (const perceptron of lastLayerPerceptrons) {
+            const lastLayerActivations = bird.network.activationLayers[bird.network.activationLayers.length - 1]
 
-                                if (perceptron.activation <= 0) continue
+            for (let index = 0; index < lastLayerActivations.length; index++) {
 
-                                bird.outputs[perceptron.name].operation()
-                            }
-                 */
-                // Sort perceptrons by activation and get the largest one
+                const activation = lastLayerActivations[index]
 
-                largestActivation = [...lastLayerActivations].sort((a, b) => a - b)[lastLayerActivations.length - 1],
+                if (activation <= 0) continue
+
+                bird.outputs[index].operation()
+            }
+            /* 
+            // Sort perceptrons by activation and get the largest one
+
+            const largestActivation = [...lastLayerActivations].sort((a, b) => a - b)[lastLayerActivations.length - 1],
                 largestActivationIndex = lastLayerActivations.indexOf(largestActivation)
 
-            if (largestActivation > 0) {
-
+            if (largestActivation > 0)
                 bird.outputs[largestActivationIndex].operation()
-            }
+             */
 
-            bird.move(bird.pos.left, Math.min(Math.max(bird.pos.top + bird.velocity, 0), env.height - (bird.height + this.floorHeight)))
+            bird.move(bird.pos.left, Math.max(bird.pos.top + bird.velocity, 0))
+
+            // If the bird is touching the floor
+
+            if (bird.pos.top + bird.height >= env.height - this.floorHeight) {
+
+                bird.kill()
+                continue
+            }
 
             if (bird.velocity < 0) bird.imageID = 'birdUp'
 
@@ -192,7 +211,7 @@ Env.prototype.run = function() {
 
             bird.fitness += 1
 
-            units.push(bird)
+            aliveBirds.push(bird)
         }
 
         game.visualize()
@@ -200,7 +219,7 @@ Env.prototype.run = function() {
 
     //
 
-    const fittestUnit = env.findFittestUnit(units)
+    const fittestUnit = env.findFittestUnit(allBirds)
 
     if (!fittestUnit.network.visualsParent) fittestUnit.network.createVisuals(fittestUnit.inputs, fittestUnit.outputs)
     fittestUnit.network.updateVisuals(fittestUnit.inputs)
@@ -211,7 +230,7 @@ Env.prototype.run = function() {
 
     //
 
-    if (env.tick - env.lastReset > env.width + env.height) {
+    if (!aliveBirds.length) {
 
         env.reset(fittestUnit)
     }

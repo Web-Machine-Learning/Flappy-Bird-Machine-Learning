@@ -19,20 +19,30 @@ Runner.prototype.run = function() {
 
     const runner = this
 
+    /*     
     let i = env.speed
 
-    while (i > 0) {
+        while (i > 0) {
 
-        setInterval(function() {
+            setInterval(function() {
 
-            if (!runners.includes(runner.ID)) return
+                if (!runners.includes(runner.ID)) return
 
-            env.run()
+                env.run()
 
-        }, 1000 - env.speed)
+            }, 1000 - env.speed)
 
-        i--
-    }
+            i--
+        } 
+    */
+
+    setInterval(function() {
+
+        if (!runners.includes(runner.ID)) return
+
+        env.run()
+
+    }, env.speed)
 }
 
 document.getElementById('changeSpeed').addEventListener('click', changeSpeed)

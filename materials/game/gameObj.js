@@ -26,6 +26,8 @@ GameObject.prototype.draw = function() {
 
     const gameObj = this
 
+    if (!gameObj.imageID) return
+
     env.cm.drawImage(document.getElementById(gameObj.imageID), gameObj.pos.left, gameObj.pos.top, gameObj.width, gameObj.height)
 }
 
