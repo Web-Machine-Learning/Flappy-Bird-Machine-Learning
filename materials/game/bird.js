@@ -3,11 +3,11 @@ class Bird extends GameObject {
 
         const top = env.height * Math.min(Math.max(Math.random(), 0.1), 0.3)
 
-        super('bird', gameID, ownerID, 30, top, 68, 48)
+        super('bird', gameID, ownerID, env.height * 0.3, top, 59.5, 42)
 
-        this.jumpDelay = 40
+        this.jumpDelay = 30
         this.lastJump = this.jumpDelay
-        this.jumpVelocity = 10
+        this.jumpVelocity = 6
 
         this.velocity = 0
         this.fitness = 0
@@ -33,8 +33,6 @@ Bird.prototype.jump = function() {
     this.velocity = Math.min(this.velocity, 0) - this.jumpVelocity
 
     this.lastJump = this.jumpDelay
-
-    console.log(this.velocity)
 }
 
 Bird.prototype.applyGravity = function() {

@@ -9,7 +9,7 @@ class Env {
         env.height = 600
         env.lastReset = 0
 
-        env.gapHeight = 60
+        env.gapHeight = 120
         env.floorHeight = 35
 
         env.tick = 0
@@ -117,6 +117,13 @@ Env.prototype.run = function() {
     for (const gameID in env.games) {
 
         const game = env.games[gameID]
+
+        if (this.roundTick % 300 == 0) {
+
+            const pipeTop = new PipeTop(game.ID, Object.keys(game.players)[0])
+
+            new PipeBottom(game.ID, Object.keys(game.players)[0], pipeTop)
+        }
 
         for (const ID in game.objects.pipeTop) {
 

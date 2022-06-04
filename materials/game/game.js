@@ -24,9 +24,9 @@ Game.prototype.init = function(inputs, outputs, weightLayers, activationLayers) 
 
     new GameObject('floor', game.ID, Object.keys(game.players)[0], 0, env.height - env.floorHeight, env.width, env.floorHeight)
 
-    new PipeTop(game.ID, Object.keys(game.players)[0])
+    const pipeTop = new PipeTop(game.ID, Object.keys(game.players)[0])
 
-    new PipeBottom(game.ID, Object.keys(game.players)[0])
+    new PipeBottom(game.ID, Object.keys(game.players)[0], pipeTop)
 
     // Create x number of units
 
