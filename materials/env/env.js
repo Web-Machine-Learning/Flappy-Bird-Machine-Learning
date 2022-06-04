@@ -126,15 +126,20 @@ Env.prototype.run = function() {
             new PipeBottom(game.ID, Object.keys(game.players)[0], pipeTop)
         }
 
+        let pipePassed
+
         const pipeTopsPastBird = []
 
         for (const ID in game.objects.pipeTop) {
 
             const pipe = game.objects.pipeTop[ID]
 
-            if (pipe.pos.left + pipe.width <= env.birdSpawnLeft) pipe.pastBird = true
+            if (!pipe.pastBird && pipe.pos.left + pipe.width <= env.birdSpawnLeft) {
 
-            else pipeTopsPastBird.push(pipe)
+                pipe.pastBird = true
+                pipePassed = true
+
+            } else pipeTopsPastBird.push(pipe)
 
             pipe.move(pipe.pos.left - 2, pipe.pos.top)
 
@@ -240,6 +245,7 @@ Env.prototype.run = function() {
 
             else bird.imageID = 'birdDown'
 
+            if (pipePassed) bird.score += 1
             bird.fitness += 1
 
             aliveBirds.push(bird)
