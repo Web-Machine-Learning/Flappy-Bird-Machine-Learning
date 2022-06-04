@@ -155,7 +155,7 @@ Env.prototype.run = function() {
             ]
 
             bird.outputs = [
-                { name: 'Flap', operation: () => bird.move(bird.pos.left - 1, bird.pos.top) },
+                { name: 'Flap', operation: () => bird.jump() },
             ]
 
             bird.network.forwardPropagate(bird.inputs)
@@ -184,9 +184,13 @@ Env.prototype.run = function() {
                 bird.outputs[largestActivationIndex].operation()
             }
 
-            bird.fitness += 1
+            bird.move(bird.pos.left, Math.min(Math.max(bird.pos.top + bird.velocity, 0), env.height - (bird.height + this.floorHeight)))
 
-            bird.move(bird.pos.left, Math.min(Math.max(bird.pos.top + bird.velocity, bird.height + this.floorHeight), 0))
+            if (bird.velocity < 0) bird.imageID = 'birdUp'
+
+            else bird.imageID = 'birdDown'
+
+            bird.fitness += 1
 
             units.push(bird)
         }
