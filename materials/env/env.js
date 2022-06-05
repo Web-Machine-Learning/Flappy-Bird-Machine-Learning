@@ -9,7 +9,7 @@ class Env {
         env.height = 600
         env.lastReset = 0
 
-        env.gapHeight = 120
+        env.gapHeight = 130
         env.floorHeight = 35
         env.birdSpawnLeft = env.width * 0.3
 
@@ -36,6 +36,7 @@ class Env {
             { name: 'Bird Y' },
             { name: 'Bird velocity' },
             { name: 'Gap Y' },
+            { name: 'Gap X' },
         ]
 
         env.outputs = [
@@ -174,7 +175,7 @@ Env.prototype.run = function() {
             return a.left - b.left
         })[0]
 
-        const gapCenterY = (closestTopPipe.pos.top + closestTopPipe.height) + this.gapHeight / 2
+        const gapCenterY = (closestTopPipe.pos.bottom) + this.gapHeight / 2
 
         for (const ID in game.objects.bird) {
 
@@ -194,6 +195,7 @@ Env.prototype.run = function() {
                 { name: 'Bird Y', value: bird.pos.top - bird.height / 2 },
                 { name: 'Bird velocity', value: bird.velocity },
                 { name: 'Gap Y', value: gapCenterY },
+                { name: 'Gap X', value: closestTopPipe.pos.right },
             ]
 
             bird.outputs = [
