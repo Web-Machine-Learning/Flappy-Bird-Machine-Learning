@@ -5,9 +5,9 @@ class Bird extends GameObject {
 
         super('bird', gameID, ownerID, env.birdSpawnLeft, top, 59.5, 42)
 
-        this.jumpDelay = 30
+        this.jumpDelay = 10
         this.lastJump = this.jumpDelay
-        this.jumpVelocity = 6
+        this.jumpVelocity = 8
 
         this.velocity = 0
         this.score = 0
@@ -38,7 +38,7 @@ Bird.prototype.jump = function() {
 
 Bird.prototype.applyGravity = function() {
 
-    this.velocity += 0.3
+    this.velocity += 0.6
 }
 
 Bird.prototype.kill = function() {

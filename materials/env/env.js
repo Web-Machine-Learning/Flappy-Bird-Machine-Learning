@@ -9,7 +9,7 @@ class Env {
         env.height = 600
         env.lastReset = 0
 
-        env.gapHeight = 130
+        env.gapHeight = 120
         env.floorHeight = 35
         env.birdSpawnLeft = env.width * 0.3
 
@@ -20,23 +20,22 @@ class Env {
         env.topScore = 0
         env.currentScore = 0
         env.gamesAmount = 1
-        env.speed = 100
+        env.speed = 10
 
         env.stats = [
             'tick',
             'roundTick',
             'generation',
             'birds',
-            'gamesAmount',
             'topScore',
             'currentScore',
             'speed'
         ]
 
         env.inputs = [
-            { name: 'Gap y pos' },
-            { name: 'Gap x pos' },
+            { name: 'Bird Y' },
             { name: 'Bird velocity' },
+            { name: 'Gap Y' },
         ]
 
         env.outputs = [
@@ -121,7 +120,7 @@ Env.prototype.run = function() {
 
         const game = env.games[gameID]
 
-        if (this.roundTick % 250 == 0) {
+        if (this.roundTick % 150 == 0) {
 
             const pipeTop = new PipeTop(game.ID, Object.keys(game.players)[0])
 
@@ -136,7 +135,7 @@ Env.prototype.run = function() {
 
             const pipe = game.objects.pipeTop[ID]
 
-            if (pipe.pos.left + pipe.width <= env.birdSpawnLeft) {
+            if (pipe.pos.left + pipe.width * 1.2 <= env.birdSpawnLeft) {
 
                 if (!pipe.pastBird) {
 
@@ -156,7 +155,7 @@ Env.prototype.run = function() {
 
             const pipe = game.objects.pipeBottom[ID]
 
-            if (pipe.pos.left + pipe.width <= env.birdSpawnLeft) pipe.pastBird = true
+            if (pipe.pos.left + pipe.width * 1.2 <= env.birdSpawnLeft) pipe.pastBird = true
 
             else pipeBottomsPastBird.push(pipe)
 
@@ -192,9 +191,9 @@ Env.prototype.run = function() {
             bird.applyGravity()
 
             bird.inputs = [
-                { name: 'Bird Y pos', value: bird.pos.top - bird.height / 2 },
-                { name: 'Gap Y pos', value: gapCenterY },
+                { name: 'Bird Y', value: bird.pos.top - bird.height / 2 },
                 { name: 'Bird velocity', value: bird.velocity },
+                { name: 'Gap Y', value: gapCenterY },
             ]
 
             bird.outputs = [
