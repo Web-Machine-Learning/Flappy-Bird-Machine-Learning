@@ -15,7 +15,7 @@ class NetworkManager {
 
         // Network structure settings
 
-        networkManager.hiddenLayersCount = 1
+        networkManager.hiddenLayersCount = 2
         networkManager.hiddenPerceptronCount = 4
     }
 }

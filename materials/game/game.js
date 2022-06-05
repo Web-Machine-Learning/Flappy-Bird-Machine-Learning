@@ -30,7 +30,7 @@ Game.prototype.init = function(inputs, outputs, weightLayers, activationLayers) 
 
     // Create x number of units
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 1000; i++) {
 
         new Bird(game.ID, Object.keys(game.players)[0], inputs, outputs, weightLayers, activationLayers)
     }

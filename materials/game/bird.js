@@ -1,7 +1,7 @@
 class Bird extends GameObject {
     constructor(gameID, ownerID, inputs, outputs, weightLayers, activationLayers) {
 
-        const top = env.height * Math.min(Math.max(Math.random(), 0.1), 0.3)
+        const top = Math.min(Math.random() * env.height, env.height * 0.7)
 
         super('bird', gameID, ownerID, env.birdSpawnLeft, top, 59.5, 42)
 

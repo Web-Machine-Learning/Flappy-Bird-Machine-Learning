@@ -16,6 +16,7 @@ class Env {
         env.tick = 0
         env.roundTick = 0
         env.generation = 1
+        env.birds = 0
         env.topScore = 0
         env.currentScore = 0
         env.gamesAmount = 1
@@ -25,6 +26,7 @@ class Env {
             'tick',
             'roundTick',
             'generation',
+            'birds',
             'gamesAmount',
             'topScore',
             'currentScore',
@@ -134,11 +136,13 @@ Env.prototype.run = function() {
 
             const pipe = game.objects.pipeTop[ID]
 
-            if (!pipe.pastBird && pipe.pos.left + pipe.width <= env.birdSpawnLeft) {
+            if (pipe.pos.left + pipe.width <= env.birdSpawnLeft) {
 
-                pipe.pastBird = true
-                pipePassed = true
+                if (!pipe.pastBird) {
 
+                    pipe.pastBird = true
+                    pipePassed = true
+                }
             } else pipeTopsPastBird.push(pipe)
 
             pipe.move(pipe.pos.left - 2, pipe.pos.top)
@@ -253,6 +257,8 @@ Env.prototype.run = function() {
 
         game.visualize()
     }
+
+    env.birds = aliveBirds.length
 
     //
 
