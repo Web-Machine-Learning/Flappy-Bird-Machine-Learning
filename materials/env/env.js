@@ -22,15 +22,7 @@ class Env {
         env.gamesAmount = 1
         env.speed = 10
 
-        env.stats = [
-            'tick',
-            'roundTick',
-            'generation',
-            'birds',
-            'topScore',
-            'currentScore',
-            'speed'
-        ]
+        env.stats = []
 
         env.inputs = [
             { name: 'Bird Y' },

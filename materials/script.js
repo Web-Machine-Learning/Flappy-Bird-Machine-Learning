@@ -45,19 +45,15 @@ Runner.prototype.run = function() {
     }, env.speed)
 }
 
-document.getElementById('changeSpeed').addEventListener('click', changeSpeed)
-
 changeSpeed()
 
 function changeSpeed() {
 
-    env.speed = parseInt(document.getElementById('newSpeed').value) || env.speed
+    env.speed = env.speed
 
     const runner = new Runner()
     runner.run()
 }
-
-document.getElementById('speedForm').addEventListener('submit', stopRefresh)
 
 function stopRefresh(event) {
 
